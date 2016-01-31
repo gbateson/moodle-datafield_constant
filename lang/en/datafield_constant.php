@@ -1,6 +1,9 @@
 <?php
 
 // This file is part of Moodle - http://moodle.org/
+<?php
+
+// This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,17 +19,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'datafield_text', language 'en', branch 'master'
+ * Strings for the "datafield_constant" component, language="en", branch="master"
  *
- * @package    datafield
- * @subpackage text
- * @copyright  2011 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
+ * @package    data
+ * @subpackage datafield_constant
+ * @copyright  2015 Gordon Bateson (gordon.bateson@gmail.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @since      Moodle 2.3
  */
 
-$string['pluginname'] = 'Constant';
+/** required strings */
+$string['pluginname'] = 'Constant field';
 
-$string['constantvalue'] = 'Constant value';
+/** more strings */
+$string['autoincrement'] = 'Auto-increment';
+$string['constantvalue'] = 'Value';
 $string['fixlangpack'] = '**The Constant field is not yet properly installed**
 
 Please append language strings for the Constant field to Database language file:
@@ -40,3 +47,4 @@ Then purge the Moodle caches:
 * Administration -> Site administration -> Development -> Purge all caches
 
 See {$a->readfile} for more details.';
+$string['printformat'] = 'Print format';

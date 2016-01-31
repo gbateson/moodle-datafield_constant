@@ -18,13 +18,13 @@
  * HTML snippet for insertion into the form to edit an instance of this field
  *
  * @package    data
- * @subpackage datafield_template
+ * @subpackage datafield_constant
  * @copyright  2015 Gordon Bateson (gordon.bateson@gmail.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since      Moodle 2.3
  */
  ?>
-<table width="100%" cellpadding="5" class="datafield_template"><?php
+<table width="100%" cellpadding="5" class="datafield_constant"><?php
 
     $name  = 'name';
     $value = $this->field->$name;
@@ -38,10 +38,25 @@
     $text  = $this->format_edit_textfield($name, $value, 'field'.$name);
     echo $this->format_table_row($name, $label, $text);
 
-    $name  = 'param1';
-    $value = $this->field->$name;
-    $label = get_string('constantvalue', 'datafield_constant');
-    $text  = $this->format_edit_textarea($name, $value, 'field'.$name);
+    $param = 'param1';
+    $name  = 'constantvalue';
+    $value = $this->field->$param;
+    $label = get_string($name, 'datafield_constant');
+    $text  = $this->format_edit_textfield($param, $value, $name, 40);
+    echo $this->format_table_row($name, $label, $text);
+
+    $param = 'param2';
+    $name  = 'autoincrement';
+    $value = $this->field->$param;
+    $label = get_string($name, 'datafield_constant');
+    $text  = $this->format_edit_checkbox($param, $value, $name);
+    echo $this->format_table_row($name, $label, $text);
+
+    $param = 'param3';
+    $name  = 'printformat';
+    $value = $this->field->$param;
+    $label = get_string($name, 'datafield_constant');
+    $text  = $this->format_edit_textfield($param, $value, $name, 40);
     echo $this->format_table_row($name, $label, $text);
 
 ?></table>
