@@ -87,7 +87,12 @@ class data_field_constant extends data_field_base {
     }
 
     function display_browse_field($recordid, $template) {
-        return $this->field->param1;
+        if (empty($this->field->param2)) {
+            return $this->field->param1; // same value for EVERY record
+        } else {
+            // auto increment field (value is different for each record)
+            return parent::display_browse_field($recordid, $template);
+        }
     }
 
     ///////////////////////////////////////////
@@ -157,6 +162,9 @@ class data_field_constant extends data_field_base {
         if ($value = $DB->get_records_sql($sql, array($this->field->id), 0, 1)) {
             $value = reset($value);
             $value = $value->content;
+            if (empty($value->content)) {
+                $value = $this->field->param1;
+            }
             $increment = 1;
         } else {
             $value = $this->field->param1;
