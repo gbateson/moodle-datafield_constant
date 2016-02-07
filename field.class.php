@@ -111,11 +111,11 @@ class data_field_constant extends data_field_base {
         }
 
         // sql to select records whose autoincrement constant is not yet set
-        $sql = 'SELECT dr.id, dc.fieldid '.
+        $sql = 'SELECT dr.id, dc.id AS contentid, dc.fieldid, dc.content '.
                'FROM {data_records} dr LEFT JOIN {data_content} dc ON dr.id = dc.recordid AND dc.fieldid = ? '.
-               'WHERE dr.dataid = ? AND dc.fieldid IS NULL '.
+               'WHERE dr.dataid = ? AND (dc.content IS NULL OR dc.content = ? OR dc.content = ?)'.
                'ORDER BY dr.timecreated';
-        $params = array($this->field->id, $this->data->id);
+        $params = array($this->field->id, $this->data->id, '', '0');
         if (! $records = $DB->get_records_sql($sql, $params)) {
             return false; // no records with missing constant
         }
@@ -126,7 +126,12 @@ class data_field_constant extends data_field_base {
                 'fieldid'  => $this->field->id,
                 'content'  => $this->get_autoincrement($record->id)
             );
-            $DB->insert_record('data_content', $content);
+            if (empty($record->contentid)) {
+                $DB->insert_record('data_content', $content);
+            } else {
+                $content->id = $record->contentid;
+                $DB->update_record('data_content', $content);
+            }
         }
 
         return true; // one or more records were updated
