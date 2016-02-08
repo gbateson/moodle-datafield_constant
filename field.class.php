@@ -64,9 +64,8 @@ class data_field_constant extends data_field_base {
             return false; // auto-increment not required
         }
 
-        $params = array('recordid' => $recordid,
-                        'fieldid'  => $this->field->id);
-        if ($DB->record_exists('data_content', $params)) {
+        $select = 'recordid = ? AND fieldid = ? AND content IS NOT NULL AND content != ? AND content != ?';
+        if ($DB->record_exists_select('data_content', $select, array($recordid, $this->field->id, '', '0'))) {
             return false; // auto-increment value is already set in DB
         }
 
@@ -162,7 +161,7 @@ class data_field_constant extends data_field_base {
         if ($value = $DB->get_records_sql($sql, array($this->field->id), 0, 1)) {
             $value = reset($value);
             $value = $value->content;
-            if (empty($value->content)) {
+            if (empty($value)) {
                 $value = $this->field->param1;
             }
             $increment = 1;
