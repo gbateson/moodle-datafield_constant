@@ -5,6 +5,14 @@ The Constant database field for Moodle >= 2.3
    The Constant database field allows the specification of an uneditable field value
    that does not change wherever it appears in the current Darabase activity.
 
+   If the "Auto-increment" box is checked, the value is automatically assigned to new
+   records and then incremented by one. Thus, each record is assigned a unique number.
+   Auto-increment values are displayed according to the "Print format" setting, which
+   is a format string for the PHP "sprintf" function, e.g. %04d pads the number with
+   zeroes on the left so that it is four-digits wide. 1 => 0001, 2 => 0002, and so on.
+
+   For full details see: http://php.net/manual/en/function.sprintf.php
+
 =================================================
 To INSTALL this plugin
 =================================================
@@ -122,9 +130,10 @@ To ADD an Constant field to a database activity
 
     5. From the "Field type" menu at the bottom of the page, select "Constant"
 
-    6. Enter values for "Field name" and "Field description" and select the subtype of this field
+    6. Enter values for "Field name" and "Field description"
 
-    7. Click the "Save changes" button at the bottom of the page.
+    7. Enter the "Value" of the constant
 
-    8. If necessary, you may need to further edit the field in order to add settings
-       that are specific to the selected subtype
+    8. If the field is to be an auto-increment field, check the "Auto-increment" box and enter a "Print format"
+
+    9. Click the "Save changes" button at the bottom of the page.
