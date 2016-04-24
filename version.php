@@ -23,7 +23,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'datafield_constant';
-$plugin->requires  = 2012062500; // Moodle 2.3
-$plugin->version   = 2016020804;
-$plugin->release   = '2016-02-08 (04)';
+$plugin->component    = 'datafield_constant';
+$plugin->dependencies = array('datafield_admin' => ANY_VERSION);
+$plugin->requires     = 2012062500; // Moodle 2.3
+$plugin->version      = 2016042405;
+$plugin->release      = '2016-04-24 (05)';

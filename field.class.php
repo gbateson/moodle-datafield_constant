@@ -28,15 +28,31 @@
  * @since      Moodle 2.3
  */
 
+// prevent direct access to this script
+defined('MOODLE_INTERNAL') || die();
+
+// get required files
+require_once($CFG->dirroot.'/mod/data/field/admin/field.class.php');
+
 class data_field_constant extends data_field_base {
 
     var $type = 'constant';
+
+    /**
+     * displays the settings for this action field on the "Fields" page
+     *
+     * @return void, but output is echo'd to browser
+     */
+    function display_edit_field() {
+        data_field_admin::check_lang_strings($this);
+        parent::display_edit_field();
+    }
 
     function display_add_field($recordid = 0, $formdata = NULL) {
         if (empty($this->field->param2)) {
             return '';
         }
-        return $this->format_edit_hiddenfield('field_'.$this->field->id, 0);
+        return data_field_admin::format_hidden_field('field_'.$this->field->id, 0);
     }
 
     /**
@@ -181,80 +197,5 @@ class data_field_constant extends data_field_base {
         }
 
         return $value;
-    }
-
-    /**
-     * format a label in mod.html
-     */
-    public function format_table_row($name, $label, $text) {
-        $label = $this->format_edit_label($name, $label);
-        $output = $this->format_table_cell($label, 'c0').
-                  $this->format_table_cell($text,  'c1');
-        $output = html_writer::tag('tr', $output, array('class' => $name, 'style' => 'vertical-align: top;'));
-        return $output;
-    }
-
-    /**
-     * format a cell in mod.html
-     */
-    public function format_table_cell($text, $class) {
-        return html_writer::tag('td', $text, array('class' => $class));
-    }
-
-    /**
-     * format a label in mod.html
-     */
-    public function format_edit_label($name, $label) {
-        return html_writer::tag('label', $label, array('for' => 'id_'.$name));
-    }
-
-    /**
-     * format a hidden field in mod.html
-     */
-    public function format_edit_hiddenfield($name, $value) {
-        $params = array('type'  => 'hidden',
-                        'name'  => $name,
-                        'value' => $value);
-        return html_writer::empty_tag('input', $params);
-    }
-
-    /**
-     * format a text field in mod.html
-     */
-    public function format_edit_textfield($name, $value, $class, $size=10) {
-        $params = array('type'  => 'text',
-                        'id'    => 'id_'.$name,
-                        'name'  => $name,
-                        'value' => $value,
-                        'class' => $class,
-                        'size'  => $size);
-        return html_writer::empty_tag('input', $params);
-    }
-
-    /**
-     * format a textarea field in mod.html
-     */
-    public function format_edit_textarea($name, $value, $class, $rows=3, $cols=40) {
-        $params = array('id'    => 'id_'.$name,
-                        'name'  => $name,
-                        'class' => $class,
-                        'rows'  => $rows,
-                        'cols'  => $cols);
-        return html_writer::tag('textarea', $value, $params);
-    }
-
-    /**
-     * format a checkbox field in mod.html
-     */
-    public function format_edit_checkbox($name, $value, $class, $checkedvalue=1) {
-        $params = array('type'  => 'checkbox',
-                        'id'    => 'id_'.$name,
-                        'name'  => $name,
-                        'value' => $checkedvalue,
-                        'class' => $class);
-        if ($value==$checkedvalue) {
-            $params['checked'] = 'checked';
-        }
-        return html_writer::empty_tag('input', $params);
     }
 }

@@ -26,37 +26,28 @@
  ?>
 <table width="100%" cellpadding="5" class="datafield_constant"><?php
 
-    $name  = 'name';
-    $value = $this->field->$name;
-    $label = get_string('field'.$name, 'data');
-    $text  = $this->format_edit_textfield($name, $value, 'field'.$name);
-    echo $this->format_table_row($name, $label, $text);
-
-    $name  = 'description';
-    $value = $this->field->$name;
-    $label = get_string('field'.$name, 'data');
-    $text  = $this->format_edit_textfield($name, $value, 'field'.$name);
-    echo $this->format_table_row($name, $label, $text);
+    data_field_admin::format_core_field($this->field, 'name');
+    data_field_admin::format_core_field($this->field, 'description');
 
     $param = 'param1';
-    $name  = 'constantvalue';
     $value = $this->field->$param;
+    $name  = 'constantvalue';
     $label = get_string($name, 'datafield_constant');
-    $text  = $this->format_edit_textfield($param, $value, $name, 40);
-    echo $this->format_table_row($name, $label, $text);
+    $text  = data_field_admin::format_text_field($param, $value, $name, 40);
+    echo data_field_admin::format_table_row($name, $label, $text);
 
     $param = 'param2';
-    $name  = 'autoincrement';
     $value = $this->field->$param;
+    $name  = 'autoincrement';
     $label = get_string($name, 'datafield_constant');
-    $text  = $this->format_edit_checkbox($param, $value, $name);
-    echo $this->format_table_row($name, $label, $text);
+    $text  = data_field_admin::format_checkbox_field($param, $value, $name);
+    echo data_field_admin::format_table_row($name, $label, $text);
 
     $param = 'param3';
-    $name  = 'printformat';
     $value = $this->field->$param;
+    $name  = 'printformat';
     $label = get_string($name, 'datafield_constant');
-    $text  = $this->format_edit_textfield($param, $value, $name, 40);
-    echo $this->format_table_row($name, $label, $text);
+    $text  = data_field_admin::format_text_field($param, $value, $name, 40);
+    echo data_field_admin::format_table_row($name, $label, $text);
 
 ?></table>

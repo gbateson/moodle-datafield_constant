@@ -26,22 +26,9 @@
  */
 
 /** required strings */
-$string['pluginname'] = 'Constant field';
+$string['pluginname'] = 'Constant';
 
 /** more strings */
 $string['autoincrement'] = 'Auto-increment';
 $string['constantvalue'] = 'Value';
-$string['fixlangpack'] = '**The Constant field is not yet properly installed**
-
-Please append language strings for the Constant field to Database language file:
-
-* EDIT: {$a->langfile}
-* ADD: $string[\'constant\'] = \'Constant\';
-* ADD: $string[\'nameconstant\'] = \'Constant field\';
-
-Then purge the Moodle caches:
-
-* Administration -> Site administration -> Development -> Purge all caches
-
-See {$a->readfile} for more details.';
 $string['printformat'] = 'Print format';
