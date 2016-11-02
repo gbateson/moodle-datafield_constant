@@ -110,6 +110,13 @@ class data_field_constant extends data_field_base {
         }
     }
 
+    /**
+     * text export returns the constant value from $field->param1
+     */
+    function export_text_value($record) {
+        return $this->field->param1;
+    }
+
     ///////////////////////////////////////////
     // custom methods
     ///////////////////////////////////////////
