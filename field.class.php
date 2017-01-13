@@ -89,6 +89,15 @@ class data_field_constant extends data_field_base {
         return parent::update_content($recordid, $value, $name);
     }
 
+    /**
+     * delete content associated with a constant field
+     * when the field is deleted from the "Fields" page
+     */
+    function delete_content($recordid=0) {
+        data_field_admin::delete_content_files($this);
+        return parent::delete_content($recordid);
+    }
+
     function display_search_field($value = '') {
         return '';
     }
