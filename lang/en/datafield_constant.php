@@ -27,6 +27,7 @@
 
 /** required strings */
 $string['pluginname'] = 'Constant';
+$string['fieldtypelabel'] = 'Constant field';
 
 /** more strings */
 $string['autoincrement'] = 'Auto-increment';
