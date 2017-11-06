@@ -31,5 +31,10 @@ $string['fieldtypelabel'] = 'Constant field';
 
 /** more strings */
 $string['autoincrement'] = 'Auto-increment';
+$string['constant'] = 'Constant';
+$string['constanttype'] = 'Type';
 $string['constantvalue'] = 'Value';
+$string['filecss'] = 'URL of CSS stylesheet';
+$string['filejs'] = 'URL of Javascript file';
 $string['printformat'] = 'Print format';
+$string['random'] = 'Random';

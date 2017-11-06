@@ -38,6 +38,30 @@ class data_field_constant extends data_field_base {
 
     var $type = 'constant';
 
+    /**#@+
+     * Database codes to indicate type of this constant field.
+     * These values are stored in the ""param2" field of the
+     * "data_fields" table in the Moodle database.
+     *
+     * @var integer
+     */
+    const TYPE_CONSTANT      = 0;
+    const TYPE_AUTOINCREMENT = 1;
+    const TYPE_RANDOM        = 2;
+    const TYPE_FILEJS        = 3;
+    const TYPE_FILECSS       = 4;
+    /**#@-*/
+
+    /**#@+
+     * value affecting the length of the random strings.
+     *
+     * @var integer
+     */
+    const MIN_RANDOM_LENGTH     = 2;
+    const DEFAULT_RANDOM_LENGTH = 4;
+    const MAX_RANDOM_LENGTH     = 8;
+    /**#@-*/
+
     /**
      * displays the settings for this action field on the "Fields" page
      *
@@ -85,7 +109,7 @@ class data_field_constant extends data_field_base {
             return false; // auto-increment value is already set in DB
         }
 
-        $value = $this->get_autoincrement($recordid);
+        $value = $this->get_constant_value($this->field->param2);
         return parent::update_content($recordid, $value, $name);
     }
 
@@ -136,31 +160,42 @@ class data_field_constant extends data_field_base {
     public function update_constants() {
         global $DB;
 
-        $constant      = optional_param('param1', '', PARAM_RAW);
-        $autoincrement = optional_param('param2', 0,  PARAM_INT);
-        $format        = optional_param('param3', '', PARAM_TEXT);
+        $value  = optional_param('param1', '', PARAM_RAW);
+        $type   = optional_param('param2', 0,  PARAM_INT);
+        $format = optional_param('param3', '', PARAM_TEXT);
 
-        if ($autoincrement==0 || $constant=='') {
-            // we don't want to delete previous constant values
-            // because they may be important e.g. receipt numbers
+        // don't do anything about empty constant values
+        if ($type==self::TYPE_CONSTANT && $value=='') {
             return false;
         }
 
-        // sql to select records whose autoincrement constant is not yet set
-        $sql = 'SELECT dr.id, dc.id AS contentid, dc.fieldid, dc.content '.
-               'FROM {data_records} dr LEFT JOIN {data_content} dc ON dr.id = dc.recordid AND dc.fieldid = ? '.
-               'WHERE dr.dataid = ? AND (dc.content IS NULL OR dc.content = ? OR dc.content = ?)'.
-               'ORDER BY dr.timecreated';
-        $params = array($this->field->id, $this->data->id, '', '0');
-        if (! $records = $DB->get_records_sql($sql, $params)) {
-            return false; // no records with missing constant
+        // sql to select ALL records using this field
+        $select = 'dr.id, dc.id AS contentid, dc.fieldid, dc.content';
+        $from   = '{data_records} dr LEFT JOIN {data_content} dc ON dr.id = dc.recordid AND dc.fieldid = ?';
+        $where  = 'dr.dataid = ?';
+        $order  = 'dr.timecreated';
+        $params = array($this->field->id, $this->data->id);
+
+        if ($type==self::TYPE_CONSTANT) {
+            $where .= ' AND (dc.content IS NULL OR '.$DB->sql_compare_text('dc.content', 255).' != ?)';
+            $params[] = "$value"; // make sure it is a string
+        } else {
+            // select only records whose constant value is not yet set
+            $where .= ' AND (dc.content IS NULL OR dc.content = ? OR dc.content = ?)';
+            $params[] = '';
+            $params[] = '0';
+        }
+
+        $records = "SELECT $select FROM $from WHERE $where ORDER BY $order";
+        if (! $records = $DB->get_records_sql($records, $params)) {
+            return false; // no records to update
         }
 
         foreach ($records as $record) {
             $content = (object)array(
                 'recordid' => $record->id,
                 'fieldid'  => $this->field->id,
-                'content'  => $this->get_autoincrement($record->id)
+                'content'  => $this->get_constant_value($type)
             );
             if (empty($record->contentid)) {
                 $DB->insert_record('data_content', $content);
@@ -174,44 +209,155 @@ class data_field_constant extends data_field_base {
     }
 
     /**
-     * get autoincrement value for a given $recordid
+     * get constant value for a record that needs to be updated
      *
      * this method expects that you have already checked
      * to see that no previous value exists for this constant
      */
-    public function get_autoincrement($recordid) {
-        global $DB;
+    public function get_constant_value($type) {
+        global $CFG, $DB, $PAGE;
 
-        // sql to get highest increment value so far
-        // we use the length of the content string
-        // to mimic "natural sorting" of the data
-        $sql = $DB->sql_length('content');
-        $sql = "SELECT id, $sql AS contentlength, content ".
-               'FROM {data_content} '.
-               'WHERE fieldid = ? '.
-               'ORDER BY contentlength DESC, content DESC';
-        if ($value = $DB->get_records_sql($sql, array($this->field->id), 0, 1)) {
-            $value = reset($value);
-            $value = $value->content;
-            if (empty($value)) {
-                $value = $this->field->param1;
+        if ($type==self::TYPE_CONSTANT) {
+            return $this->field->param1; // a constant value
+        }
+
+        if ($type==self::TYPE_AUTOINCREMENT) {
+            // sql to get highest field value so far
+            // we use the length of the value string
+            // to mimic "natural sorting" of the data
+            $select = 'id, '.$DB->sql_length('content').' AS contentlength, content';
+            $from   = '{data_content}';
+            $where  = 'fieldid = ? AND content IS NOT NULL';
+            $order  = 'contentlength DESC, content DESC';
+            $params = array($this->field->id);
+
+            // try to select only numeric strings (MySQL and PostgreSQL)
+            if ($sql_regex_supported = $DB->sql_regex_supported()) {
+                $where .= ' AND content '.$DB->sql_regex().' ?';
+                $params[] = '^[0-9]+$';
+                $limitnum = 1; // fetch only highest numeric record
+            } else {
+                $where .= ' AND content != ?';
+                $params[] = '';
+                $limitnum  = 0; // fetch ALL records
             }
-            $increment = 1;
-        } else {
-            $value = $this->field->param1;
-            $increment = 0;
+
+            // extract highest $value of this field in the database
+            $value = null;
+            $values = "SELECT $select FROM $from WHERE $where ORDER BY $order";
+            if ($values = $DB->get_records_sql($values, $params, 0, $limitnum)) {
+                if ($sql_regex_supported) {
+                    $value = reset($values);
+                } else {
+                    // get first numeric value (MSSQL and Oracle)
+                    while ($value = array_shift($values)) {
+                        if (preg_match('/^[0-9]+$/', $value->content)) {
+                            break; // we found a numeric value - YAY!
+                        }
+                    }
+                }
+            }
+
+            // increment the $value
+            if (empty($value)) {
+                $value = 0;
+            } else {
+                $value = intval($value->content);
+            }
+            $value = max($value + 1, $this->field->param1);
+
+            // format the $value
+            if ($fmt = $this->field->param3) {
+                $value = sprintf($fmt, $value);
+            }
+
+            return $value;
         }
 
-        if (! preg_match('/[0-9]+/', $value, $matches)) {
-            return ''; // non-numeric value cannot be incremented
+        if ($type==self::TYPE_RANDOM) {
+            if (is_numeric($this->field->param1)) {
+                $length = $this->field->param1;
+                $length = max($length, self::MIN_RANDOM_LENGTH);
+                $length = min($length, self::MAX_RANDOM_LENGTH);
+            } else {
+                $length = self::DEFAULT_RANDOM_LENGTH;
+            }
+            $count = 0;
+            $select = 'fieldid = ? AND '.$DB->sql_compare_text('content', 255).' = ?';
+            while (true) {
+                $value = substr(uniqid(), -$length).'-'.substr(md5(mt_rand()), 0, $length);
+                $params = array($this->field->id, $value);
+                if (! $DB->record_exists_select('data_content', $select, $params)) {
+                    return $value;
+                }
+                $count++;
+                if ($count > 10000) {
+                    break; // infinite loop ?!
+                }
+            }
         }
 
-        $value = intval($matches[0]) + $increment;
+        if ($type==self::TYPE_FILEJS || $type==self::TYPE_FILECSS) {
+            if ($url = $this->field->param1) {
 
-        if ($fmt = $this->field->param3) {
-            $value = sprintf($fmt, $value);
+                if ($CFG->slasharguments) {
+                    $file_php = 'file.php';
+                } else {
+                    $file_php = 'file.php?file=';
+                }
+                $pluginfile_php = 'plugin'.$file_php;
+                $replace = array(
+                    '%wwwroot%' => $CFG->wwwroot,
+                    '%sitefiles%' => $CFG->wwwroot.'/'.$file_php.'/'.SITEID,
+                    '%coursefiles%' => $CFG->wwwroot.'/'.$file_php.'/'.$this->data->course,
+                    '%modulefiles%' => $CFG->wwwroot.'/'.$pluginfile_php.'/'.$this->context->id.'/mod_data/intro'
+                );
+                $url = strtr($url, $replace_pairs);
+                if (! preg_match('/^https?:\/\//', $url)) {
+                    $url = new moodle_url($url);
+                }
+
+                if ($type==self::TYPE_URL) {
+                    return $url;
+                }
+
+                if ($PAGE->requires->is_head_done()) {
+                    // hmm, the document head has alreay been printed
+                    // this is not allowed really :-(
+                    if ($type==self::TYPE_FILEJS) {
+                        $params = array('type' => 'tetxt/javascript', 'src' => $url);
+                        return html_writer::tag('script', $params);
+                    }
+                    if ($type==self::TYPE_FILECSS) {
+                        $params = array('rel' => 'stylesheet', 'type' => 'tetxt/css', 'href' => $url);
+                        return html_writer::tag('link', $params);
+                    }
+                } else {
+                    if ($type==self::TYPE_FILEJS) {
+                        $PAGE->requires->js($url);
+                        return true;
+                    }
+                    if ($type==self::TYPE_FILECSS) {
+                        $PAGE->requires->css($url);
+                        return true;
+                    }
+                }
+            }
         }
 
-        return $value;
+        // Oops - there was a problem !!
+        return null;
+    }
+
+    /**
+     * get list of action times
+     */
+    static public function get_constant_types() {
+        $plugin = 'datafield_constant';
+        return array(self::TYPE_CONSTANT      => get_string('constant',      $plugin),
+                     self::TYPE_AUTOINCREMENT => get_string('autoincrement', $plugin),
+                     self::TYPE_RANDOM        => get_string('random',        $plugin),
+                     self::TYPE_FILEJS        => get_string('filejs',        $plugin),
+                     self::TYPE_FILECSS       => get_string('filecss',       $plugin));
     }
 }

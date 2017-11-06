@@ -38,9 +38,10 @@
 
     $param = 'param2';
     $value = $this->field->$param;
-    $name  = 'autoincrement';
+    $name  = 'constanttype';
     $label = get_string($name, 'datafield_constant');
-    $text  = data_field_admin::format_checkbox_field($param, $value, $name);
+    $options = data_field_constant::get_constant_types();
+    $text  = data_field_admin::format_select_field($param, $options, $value, $name);
     echo data_field_admin::format_table_row($name, $label, $text);
 
     $param = 'param3';
