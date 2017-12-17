@@ -63,6 +63,13 @@ class data_field_constant extends data_field_base {
     /**#@-*/
 
     /**
+     * generate HTML to display icon for this field type on the "Fields" page
+     */
+    function image() {
+        return data_field_admin::field_icon($this);
+    }
+
+    /**
      * displays the settings for this action field on the "Fields" page
      *
      * @return void, but output is echo'd to browser
