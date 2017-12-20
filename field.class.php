@@ -117,7 +117,7 @@ class data_field_constant extends data_field_base {
         }
 
         $value = $this->get_constant_value($this->field->param2);
-        return data_field_admin::update_content_multilang($recordid, $value, $name);
+        return data_field_admin::update_content_multilang($this->field->id, $recordid, $value, $name);
     }
 
     /**
