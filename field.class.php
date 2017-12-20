@@ -117,7 +117,7 @@ class data_field_constant extends data_field_base {
         }
 
         $value = $this->get_constant_value($this->field->param2);
-        return parent::update_content($recordid, $value, $name);
+        return data_field_admin::update_content_multilang($recordid, $value, $name);
     }
 
     /**
@@ -155,6 +155,16 @@ class data_field_constant extends data_field_base {
      */
     function export_text_value($record) {
         return $this->field->param1;
+    }
+
+    /**
+     * Return the plugin configs for external functions.
+     *
+     * @return array the list of config parameters
+     * @since Moodle 3.3
+     */
+    public function get_config_for_external() {
+    	return data_field_admin::get_field_params($this->field);
     }
 
     ///////////////////////////////////////////
