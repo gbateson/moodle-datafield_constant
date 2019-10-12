@@ -1,0 +1,69 @@
+========================================
+Change log for datafield_constant
+========================================
+
+2017-12-20 (16)
+ -  fix URL of secondary zip download site 
+
+2017-12-20 (16)
+ -  modify arguments used by 'update_content_multilang' method 
+
+2017-12-20 (15)
+ -  add new standard method, 'get_config_for_external()' 
+
+2017-12-18 (14)
+ -  add pix/icon for this plugin 
+
+2017-12-17 (13)
+ -  add pix/icon.gif and new method to return correct icon for this plugin 
+
+2017-07-11 (12)
+ -  preliminary implementation of FILEJS and FILECSS 
+
+2017-04-19 (11)
+ -  add new 'random' constants, which give a unique randomly generated string to each record 
+
+2017-04-19 (10)
+ -  improve selection and setting of autoincrement fields 
+
+2017-01-18 (09)
+ -  add strings required for Moodle >= 3.2 
+
+2017-01-13 (08)
+ -  datafield_action ensure files are deleted from filearea when fields of this type are deleted from Fields page 
+
+2017-01-11 (07)
+ -  add lib.php with function to rewrite file URLs 
+
+2016-11-02 (06)
+ -  disable text_export for action fields 
+
+2016-04-24 (05)
+ -  use datafield_admin static methods to format fields in mod.html 
+
+2016-04-24 (05)
+ -  use datafield_admin static methods to format fields in mod.html 
+
+2016-02-08 (04)
+ -  datafield_admin improve explanation in README.txt 
+
+2016-02-08 (04)
+ -  fix etting of empty constant values when field itself is updated from 'Fields' page 
+
+2016-02-08 (04)
+ -  fix etting of empty constant values when field itself is updated from 'Fields' page 
+
+2016-02-07 (03)
+ -  fix display of autoincrement fields 
+
+2016-02-07 (02)
+ -  force insertion of new autoincrement values for all records in current database activity 
+
+2016-01-30 (01)
+ -  fix syntax error in GPL copyright notice in lang/en/datafield_constant.php 
+
+2016-01-30 (01)
+ -  new setting to simulate autoincrement fields, e.g. receipt number 
+
+2016-01-28 (00)
+ -  populate new datafield type: constant 
