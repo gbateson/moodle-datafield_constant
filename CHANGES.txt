@@ -2,6 +2,9 @@
 Change log for datafield_constant
 ========================================
 
+2020-08-16 (19)
+ - use <DL> + bootstrap classes in mod.html templates
+
 2019-10-12 (17)
  - standardize layout and spelling in CHANGES.txt
 

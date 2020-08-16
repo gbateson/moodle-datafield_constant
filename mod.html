@@ -23,32 +23,33 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since      Moodle 2.3
  */
- ?>
-<table width="100%" cellpadding="5" class="datafield_constant"><?php
 
-    data_field_admin::format_core_field($this->field, 'name');
-    data_field_admin::format_core_field($this->field, 'description');
+data_field_admin::set_bootstrap(true);
+data_field_admin::mod_html_start($this->field);
 
-    $param = 'param1';
-    $value = $this->field->$param;
-    $name  = 'constantvalue';
-    $label = get_string($name, 'datafield_constant');
-    $text  = data_field_admin::format_text_field($param, $value, $name, 40);
-    echo data_field_admin::format_table_row($name, $label, $text);
+data_field_admin::format_core_field($this->field, 'name');
+data_field_admin::format_core_field($this->field, 'description');
 
-    $param = 'param2';
-    $value = $this->field->$param;
-    $name  = 'constanttype';
-    $label = get_string($name, 'datafield_constant');
-    $options = data_field_constant::get_constant_types();
-    $text  = data_field_admin::format_select_field($param, $options, $value, $name);
-    echo data_field_admin::format_table_row($name, $label, $text);
+$param = 'param1';
+$value = $this->field->$param;
+$name  = 'constantvalue';
+$label = get_string($name, 'datafield_constant');
+$text  = data_field_admin::format_text_field($param, $value, $name, 40);
+echo data_field_admin::format_table_row($name, $label, $text);
 
-    $param = 'param3';
-    $value = $this->field->$param;
-    $name  = 'printformat';
-    $label = get_string($name, 'datafield_constant');
-    $text  = data_field_admin::format_text_field($param, $value, $name, 40);
-    echo data_field_admin::format_table_row($name, $label, $text);
+$param = 'param2';
+$value = $this->field->$param;
+$name  = 'constanttype';
+$label = get_string($name, 'datafield_constant');
+$options = data_field_constant::get_constant_types();
+$text  = data_field_admin::format_select_field($param, $options, $value, $name);
+echo data_field_admin::format_table_row($name, $label, $text);
 
-?></table>
+$param = 'param3';
+$value = $this->field->$param;
+$name  = 'printformat';
+$label = get_string($name, 'datafield_constant');
+$text  = data_field_admin::format_text_field($param, $value, $name, 40);
+echo data_field_admin::format_table_row($name, $label, $text);
+
+data_field_admin::mod_html_end();
