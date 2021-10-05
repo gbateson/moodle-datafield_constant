@@ -2,6 +2,9 @@
 Change log for datafield_constant
 ========================================
 
+2021-10-05 (20)
+ - calculate template values dynamically using datafield_admin when exporting to CSV
+
 2020-08-16 (19)
  - use <DL> + bootstrap classes in mod.html templates
 
