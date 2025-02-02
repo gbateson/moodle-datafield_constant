@@ -165,7 +165,29 @@ class data_field_constant extends data_field_base {
      * @since Moodle 3.3
      */
     public function get_config_for_external() {
-    	return data_field_admin::get_field_params($this->field);
+    	return data_field_admin::get_field_params_for_external($this->field);
+    }
+
+    /**
+     * Return the params required by "templates/xxx.mustache" template.
+     *
+     * @return array the list of config parameters
+     * @since Moodle 3.3
+     */
+    protected function get_field_params(): array {
+        global $DB, $CFG;
+
+        // Fetch the name, description and params1-10.
+        $data = parent::get_field_params();
+
+        // Convert action types to array suitable for mustache template.
+        $name = 'constanttypes';
+        $data[$name] = self::get_constant_types();
+        $data[$name] = data_field_admin::mustache_select_options(
+            $data['param2'], $data[$name]
+        );
+
+        return $data;
     }
 
     ///////////////////////////////////////////
