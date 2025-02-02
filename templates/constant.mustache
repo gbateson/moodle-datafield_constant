@@ -1,0 +1,39 @@
+<fieldset>
+    {{> datafield_admin/basicfields }}
+    {{> mod_data/fields/requiredfield }}
+
+    <!-- Template for constantvalue field -->
+    <div class="form-group row fitem">
+        <div class="col-md-3">
+            <label for="param1" class="mb-0">{{#str}}constantvalue, datafield_constant, 1{{/str}}</label>
+        </div>
+        <div class="col-md-9 form-inline align-items-start felement">
+            <input type="text" id="param1" name="param1" value="{{param1}}" class="constantvalue widetext">
+        </div>
+    </div>
+
+    <!-- Template for constanttype field -->
+    <div class="form-group row fitem">
+        <div class="col-md-3">
+            <label for="param2" class="mb-0">{{#str}}constanttype, datafield_constant{{/str}}</label>
+        </div>
+        <div class="col-md-9 form-inline align-items-start felement">
+            <select id="param2" class="select custom-select form-control" name="param2">
+                {{#constanttypes}}
+                    <option value="{{value}}" {{#selected}}selected{{/selected}}>{{text}}</option>
+                {{/constanttypes}}
+            </select>
+        </div>
+    </div>
+
+    <!-- Template for argument1 field -->
+    <div class="form-group row fitem">
+        <div class="col-md-3">
+            <label for="param3" class="mb-0">{{#str}}printformat, datafield_constant, 1{{/str}}</label>
+        </div>
+        <div class="col-md-9 form-inline align-items-start felement">
+            <input type="text" id="param3" name="param3" value="{{param3}}" class="constantvalue widetext">
+        </div>
+    </div>
+
+</fieldset>

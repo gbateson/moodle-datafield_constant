@@ -2,6 +2,9 @@
 Change log for datafield_constant
 ========================================
 
+2025-02-02 (23)
+ - datafield_template add files for mustache templates
+
 2025-02-02 (22)
  - use mustache templates in Moodle >= 4.4
 
